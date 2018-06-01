@@ -1,0 +1,29 @@
+{
+  "name": "webrtc-signal-http-peer-identification",
+  "version": "1.0.0",
+  "description": "An extension for the webrtc-signal-http package that identifies servers and clients",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KanishkT123/webrtc-signal-http-peer-identification.git"
+  },
+  "keywords": [
+    "signalling",
+    "server",
+    "3dtoolkit",
+    "CSE"
+  ],
+  "author": "Kanishk Tantia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KanishkT123/webrtc-signal-http-peer-identification/issues"
+  },
+  "homepage": "https://github.com/KanishkT123/webrtc-signal-http-peer-identification#readme"
+}
