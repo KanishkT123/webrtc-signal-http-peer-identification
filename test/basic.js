@@ -167,5 +167,37 @@ describe('webrtc-signal-http-capacity', () => {
             // by not getting the final client here, we demonstrate capacity being respected
             assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,2,0', ''])
         })
+
+        it('should support join-late peers', () => {
+            const app = appCreator()
+
+            app.peerList.addPeer('client1', {})
+            
+            const serverId1 = app.peerList.addPeer('server1', {})
+
+            // simulate setting the server1 capacity to 2
+            app.peerList._peers[serverId1].capacity = 2
+
+            // assigns pairId to client1
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', ''])
+
+            app.peerList.addPeer('client2', {})
+
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,3,0', ''])
+
+            app.peerList.addPeer('client3', {})
+
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,3,0', ''])
+
+            // to be sure, run it again (pairId set for each)
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,3,0', ''])
+
+            const serverId2 = app.peerList.addPeer('server2', {})
+
+            assert.deepEqual(app.peerList.dataFor(serverId2).split("\n"), ['client3,4,0', ''])
+
+            // again to be sure
+            assert.deepEqual(app.peerList.dataFor(serverId2).split("\n"), ['client3,4,0', ''])
+        })
     })
 })

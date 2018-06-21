@@ -1,6 +1,6 @@
 {
   "name": "webrtc-signal-http-peer-identification",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An extension for the webrtc-signal-http package that identifies servers and clients",
   "main": "lib/index.js",
   "directories": {
