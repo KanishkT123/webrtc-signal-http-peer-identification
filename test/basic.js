@@ -92,7 +92,7 @@ describe('webrtc-signal-http-capacity', () => {
             const unknownId1 = app.peerList.addPeer('unknown1', {})
 
 
-            //Make sure all 7 peers (and the empty string) are returned
+            //Make sure all 7 peers (and empty string) are returned
             assert.equal(app.peerList.dataFor(unknownId1).split("\n").length, 8)
 
             //Make sure there are servers in the returned list
@@ -102,7 +102,70 @@ describe('webrtc-signal-http-capacity', () => {
             assert(app.peerList.dataFor(unknownId1).includes("client"))
 
         })
+    })
 
+    describe('pairing', () => {
+        beforeEach(() => {
+            process.env.WEBRTC_PEERID_PAIRING = 1
+            process.env.WEBRTC_PEERID_RESPECT_CAPACITY = 1
+        }) 
+        afterEach(() => {
+            process.env.WEBRTC_PEERID_PAIRING = 0
+            process.env.WEBRTC_PEERID_RESPECT_CAPACITY = 0
+        })
 
+        it('should distribute peers', () => {
+            const app = appCreator()
+
+            app.peerList.addPeer('client1', {})
+            app.peerList.addPeer('client2', {})
+            app.peerList.addPeer('client3', {})
+
+            const serverId1 = app.peerList.addPeer('server1', {})
+            const serverId2 = app.peerList.addPeer('server2', {})
+            const serverId3 = app.peerList.addPeer('server3', {})
+            const serverId4 = app.peerList.addPeer('server4', {})
+
+            app.peerList.addPeer('unknown1', {})
+
+            // make sure we select just one client
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', ''])
+
+            // subsequent calls include this client indefinitely, but get new ones if possible
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', ''])
+
+            // the next server gets the next client
+            assert.deepEqual(app.peerList.dataFor(serverId2).split("\n"), ['client2,2,0', ''])
+
+            // the next server gets the next client
+            assert.deepEqual(app.peerList.dataFor(serverId3).split("\n"), ['client3,3,0', ''])
+
+            // the final server gets no clients
+            // note: this assert validates that the server has itself in the  list which occurs when there is no peers in the list
+            assert.deepEqual(app.peerList.dataFor(serverId4).split("\n"), ['server4,7,0', ''])
+        })
+
+        it('should respect capacity', () => {
+            const app = appCreator()
+
+            app.peerList.addPeer('client1', {})
+            app.peerList.addPeer('client2', {})
+            app.peerList.addPeer('client3', {})
+
+            const serverId1 = app.peerList.addPeer('server1', {})
+            const serverId2 = app.peerList.addPeer('server2', {})
+            const serverId3 = app.peerList.addPeer('server3', {})
+
+            app.peerList.addPeer('unknown1', {})
+
+            // simulate setting the server1 capacity to 2
+            app.peerList._peers[serverId1].capacity = 2
+
+            // subsequent calls include this client indefinitely, but get new ones if possible
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,2,0', ''])
+
+            // by not getting the final client here, we demonstrate capacity being respected
+            assert.deepEqual(app.peerList.dataFor(serverId1).split("\n"), ['client1,1,0', 'client2,2,0', ''])
+        })
     })
 })

@@ -12,6 +12,13 @@ To install a signal server including this extension that can be used in a cli `n
 
 To consume this server in combination with [webrtc-signal-http](https://github.com/bengreenier/webrtc-signal-http) and other possible extensions, `npm install webrtc-signal-http webrtc-signal-http-capacity` and then see [this sample file](index.js) for an example of code that works using the server and this extension.
 
+## Configuration
+
+> These values modify the module behavior via Environment Variables.
+
++ `WEBRTC_PEERID_RESPECT_CAPACITY` - hands out peers such that capacity reported by the [webrtc-signal-http-capacity](https://github.com/bengreenier/webrtc-signal-http-capacity) plugin is respected
++ `WEBRTC_PEERID_PAIRING` - pairs clients to servers. if `WEBRTC_PEERID_RESPECT_CAPACITY` is set, capacity will be considered, otherwise 1:1 pairings will be used
+
 ## RESTful API
 
 To understand the base API provided by [webrtc-signal-http](https://github.com/bengreenier/webrtc-signal-http), look at the [docs for that project](https://github.com/bengreenier/webrtc-signal-http#restful-api). This documents the API endpoints this extension adds.
